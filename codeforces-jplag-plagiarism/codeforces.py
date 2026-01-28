@@ -23,9 +23,28 @@ from dotenv import load_dotenv
 
 import codeforces_api # Need to add {'asManager': 'true'} in the 'parameters' variable inside the library
 
-CONTEST_ID = 639210
-END_DATE=datetime(year=2025, month=10, day=4, hour=23, minute=59)
-ALL_PROBLEM_INDEXES = 'A B'
+ids = {
+    632909: {'d': datetime(year=2025, month=9, day=5, hour=23, minute=59), 'p': 'A B', 'i':1},
+    634293: {'d': datetime(year=2025, month=9, day=12, hour=23, minute=59), 'p': 'A B C', 'i':2},
+    635863: {'d': datetime(year=2025, month=9, day=20, hour=23, minute=59), 'p': 'A B', 'i':3},
+    637359: {'d': datetime(year=2025, month=9, day=26, hour=23, minute=59), 'p': 'A B', 'i':4},
+    639210: {'d': datetime(year=2025, month=10, day=4, hour=23, minute=59), 'p': 'A B', 'i':5},
+    641427: {'d': datetime(year=2025, month=10, day=11, hour=23, minute=59), 'p': 'A B C', 'i':6}, 
+    643004: {'d': datetime(year=2025, month=10, day=18, hour=23, minute=59), 'p': 'A B', 'i':7}, 
+    645195: {'d': datetime(year=2025, month=10, day=26, hour=23, minute=59), 'p': 'A B', 'i':1.4}, 
+    645615: {'d': datetime(year=2025, month=11, day=2, hour=23, minute=59), 'p': 'A B C', 'i':8}, 
+    650357: {'d': datetime(year=2025, month=11, day=15, hour=23, minute=59), 'p': 'A B C', 'i':9},
+    652201: {'d': datetime(year=2025, month=11, day=22, hour=23, minute=59), 'p': 'A B', 'i':10},
+    653969: {'d': datetime(year=2025, month=11, day=30, hour=23, minute=59), 'p': 'A B', 'i':11},
+    655438: {'d': datetime(year=2025, month=12, day=6, hour=23, minute=59), 'p': 'A B', 'i':12},
+    657523: {'d': datetime(year=2025, month=12, day=13, hour=23, minute=59), 'p': 'A', 'i':13},
+}
+
+CONTEST_ID = 657523
+ONLY_GRADES = False
+END_DATE= ids[CONTEST_ID]['d']
+ALL_PROBLEM_INDEXES = ids[CONTEST_ID]['p']
+TOPIC_N = ids[CONTEST_ID]['i']
 CF_GROUP_ID = '8332GXpGlQ'
 LATE_SUBMISSION_IDS = []
 INSTRUCTOR_HANDLES = ['ThatDude', 'system205', 'Damurka', 'timur_harin', 'fizruk', 'spaghetti_coder']
@@ -399,7 +418,7 @@ def main():
     contest_str = str(CONTEST_ID)
     status_path = DATA_DIR / (contest_str + '_submits.json')
     submissions_source_dir = contest_str
-    final_results_path = DATA_DIR / (contest_str + '_results.csv')
+    final_results_path = DATA_DIR / (contest_str + f'topic_{TOPIC_N}_results.csv')
     solutions_dir = contest_str + '_solutions'
 
     print(get_online_submission_count(CONTEST_ID), 'online submissions')
@@ -452,13 +471,15 @@ def main():
     # Grade Report Generation
     generate_student_problem_solved_scores()
 
-    # Solution analysis and plagiarism detection.
-    rename_submission_file_extensions()
-    user_last_ok_submission_per_task = collect_last_user_submission_per_task(ordered_user_submissions, submissions_dict)
 
-    # JPlag Similarity Detection
-    jplag_measure_similarity(user_last_ok_submission_per_task, cf_handles, participants_df)
-    calculate_jplag_metrics_and_statistics()
+    if (not ONLY_GRADES):
+        # Solution analysis and plagiarism detection.
+        rename_submission_file_extensions()
+        user_last_ok_submissdion_per_task = collect_last_user_submission_per_task(ordered_user_submissions, submissions_dict)
+
+        # JPlag Similarity Detection
+        jplag_measure_similarity(user_last_ok_submissdion_per_task, cf_handles, participants_df)
+        calculate_jplag_metrics_and_statistics()
 
 
 if __name__ == '__main__':
